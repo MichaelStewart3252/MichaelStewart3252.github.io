@@ -1,0 +1,20 @@
+{
+    "name": "michaelstewart3252.github.io",
+    "version": "1.0.0",
+    "description": "Personal Website!",
+    "main": "server.js", 
+    "scripts": {
+      "start": "node server.js"
+    },
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/MichaelStewart3252/MichaelStewart3252.github.io.git"
+    },
+    "author": "Michael Stewart",
+    "license": "ISC",
+    "dependencies": {
+      "express": "^4.21.2"
+    }
+  }
+  
+  
