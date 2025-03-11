@@ -4,6 +4,7 @@
     "description": "React frontend for Personal Website",
     "main": "index.js",
     "scripts": {
+        "start": "vite",
         "dev": "vite",
         "build": "vite build",
         "serve": "vite preview"
