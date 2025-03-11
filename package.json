@@ -1,0 +1,15 @@
+{
+  "name": "michaelstewart3252.github.io",
+  "version": "1.0.0",
+  "description": "Personal Website!",
+  "main": "\\",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "MichaelStewart3252.github.io"
+  },
+  "author": "Michael Stewart",
+  "license": "ISC"
+}
