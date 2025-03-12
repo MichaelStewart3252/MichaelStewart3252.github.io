@@ -9,6 +9,7 @@
         height: 100%;
         margin: 0;
         padding: 0;
+        overflow: hidden; /* Prevent body from overflowing */
       }
 
       #app {
@@ -16,8 +17,9 @@
         margin: 0;
         padding: 0;
         background-image: url('/background.jpg');
-        background-size: cover;  /* Ensures the background image covers the whole page */
+        background-size: cover;
         background-position: center;
+        overflow: auto; /* Allow scrolling on the app container */
       }
     </style>
   </head>
