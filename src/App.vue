@@ -26,7 +26,7 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  background: url('/public/homepage.jpg') no-repeat center center fixed; /* Background image */
+  background: url('/homepage.jpg') no-repeat center center fixed; /* Background image */
   background-size: cover; /* Ensure it covers the full viewport */
 }
 
