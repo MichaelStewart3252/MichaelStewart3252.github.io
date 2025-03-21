@@ -1,7 +1,7 @@
 <template>
   <div id="app" ref="appContainer">
     <header>
-      <h1>Welcome to My Vite/Vue App</h1>
+      <h1>SKIBABIBIBI</h1>
       <nav>
         <router-link to="/">Home</router-link>
         <router-link to="/about">About</router-link>
@@ -26,7 +26,7 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  background: url('./homepage.jpg') no-repeat center center fixed; /* Background image */
+  background: url('/public/homepage.jpg') no-repeat center center fixed; /* Background image */
   background-size: cover; /* Ensure it covers the full viewport */
 }
 
