@@ -1,7 +1,6 @@
 <template>
   <div id="app" ref="appContainer">
     <header>
-      <h1>SKIBABIBIBI</h1>
       <nav>
         <router-link to="/">Home</router-link>
         <router-link to="/about">About</router-link>
