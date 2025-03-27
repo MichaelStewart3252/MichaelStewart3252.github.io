@@ -1,50 +1,45 @@
 <template>
-  <div class="homepage-container">
-    <div class="info-container">
+  <section id="home" class="fullpage-section">
+    <div class="content">
       <h1>Michael Stewart</h1>
       <p>Programming with Personality</p>
     </div>
-  </div>
+  </section>
 </template>
 
 <script>
 export default {
-  name: 'HomePage'
-};
+  name: 'HomePage',
+  mounted() {
+    // Ensure proper section height
+    this.$el.style.minHeight = 'calc(100vh - 60px)'
+  }
+}
 </script>
 
 <style scoped>
-/* Set the background image */
-.homepage-container {
-  height: 100vh;
+.fullpage-section {
+  width: 100%;
   display: flex;
-  justify-content: flex-start; /* Aligns content to the left */
-  align-items: center; /* Centers vertically */
-  padding-left: 5vw; /* 10% from the left dynamically */
+  align-items: center;
+  padding-left: 10%;
+  background: url('/homepage.jpg') center/cover no-repeat;
 }
 
-/* Styling for the content */
-.info-container {
-  position: absolute;
-  padding: 0.5rem;
-  border-radius: 10px;
-  top : 40%;
-  width: 50vw; /* Adjust width dynamically */
-  max-width: 800px; /* Prevents it from getting too large */
+.content {
   color: white;
-  text-align: left;
-
-}
-/* Ensure the header is positioned to the left, halfway down the screen */
-h1 {
-  font-size: 4vw;
-  margin-bottom: 0.5rem;
+  max-width: 50%;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
 
-/* Styling for the paragraph */
-p {
-
-  font-size: 2vw;
-  text-align: left;
+@media (max-width: 768px) {
+  .fullpage-section {
+    padding-left: 5%;
+    justify-content: center;
+  }
+  .content {
+    max-width: 90%;
+    text-align: center;
+  }
 }
 </style>
