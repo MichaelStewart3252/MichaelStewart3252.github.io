@@ -1,5 +1,5 @@
 <template>
-  <section id="home" class="fullpage-section">
+  <section class="fullpage-section">
     <div class="content">
       <h1>Michael Stewart</h1>
       <p>Programming with Personality</p>
@@ -11,8 +11,8 @@
 export default {
   name: 'HomePage',
   mounted() {
-    // Ensure proper section height
-    this.$el.style.minHeight = 'calc(100vh - 60px)'
+    this.$el.id = 'home';
+    this.$el.style.minHeight = 'calc(100vh - 60px)';
   }
 }
 </script>
@@ -20,16 +20,21 @@ export default {
 <style scoped>
 .fullpage-section {
   width: 100%;
+  height: calc(100vh - 60px); /* Adjust for fixed header */
   display: flex;
   align-items: center;
   padding-left: 10%;
-  background: url('/homepage.jpg') center/cover no-repeat;
+
+  background-image: url('/homepage.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center bottom; /* 👈 keep the bottom visible */
 }
 
 .content {
   color: white;
   max-width: 50%;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+  font-size: 4em;
 }
 
 @media (max-width: 768px) {

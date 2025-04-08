@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <header>
+    <header :class="{ scrolled: isScrolled }">
       <nav>
         <a href="#home" 
            :class="{ active: currentSection === 'home' }"
@@ -11,9 +11,9 @@
       </nav>
     </header>
 
-    <main class="scroll-container" @scroll="handleScroll" ref="mainContainer">
-      <HomePage id="home" ref="homeSection" />
-      <AboutPage id="about" ref="aboutSection" />
+    <main class="scroll-container" ref="mainContainer">
+      <HomePage ref="homeSection" />
+      <AboutPage ref="aboutSection" />
     </main>
   </div>
 </template>
@@ -27,47 +27,57 @@ export default {
   data() {
     return {
       currentSection: 'home',
-      scrollTimeout: null
-    }
+      observer: null,
+      isScrolled: false,  // Track if the navbar should change
+    };
   },
   mounted() {
-    this.checkActiveSection()
-    window.addEventListener('scroll', this.handleScroll, { passive: true })
+    this.$nextTick(() => {
+      this.setupIntersectionObserver();
+      window.addEventListener('scroll', this.handleScroll);  // Listen to scroll events
+    });
   },
   beforeUnmount() {
-    window.removeEventListener('scroll', this.handleScroll)
+    if (this.observer) {
+      this.observer.disconnect();
+    }
+    window.removeEventListener('scroll', this.handleScroll);
   },
   methods: {
-    handleScroll() {
-      clearTimeout(this.scrollTimeout)
-      this.scrollTimeout = setTimeout(this.checkActiveSection, 100)
-    },
-    checkActiveSection() {
-      const scrollPosition = window.scrollY + 100
-      const homeSection = document.getElementById('home')
-      const aboutSection = document.getElementById('about')
+    setupIntersectionObserver() {
+      const options = {
+        root: this.$refs.mainContainer,
+        rootMargin: '-50% 0px -50% 0px', // Center detection
+        threshold: 0
+      };
 
-      if (!homeSection || !aboutSection) return
+      this.observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            this.currentSection = entry.target.id;
+          }
+        });
+      }, options);
 
-      const homePosition = homeSection.offsetTop
-      const homeHeight = homeSection.offsetHeight
-      const aboutPosition = aboutSection.offsetTop
-
-      if (scrollPosition >= aboutPosition) {
-        this.currentSection = 'about'
-      } else if (scrollPosition >= homePosition && scrollPosition < homePosition + homeHeight) {
-        this.currentSection = 'home'
-      }
+      // Observe both sections
+      [this.$refs.homeSection, this.$refs.aboutSection].forEach(section => {
+        if (section?.$el) {
+          this.observer.observe(section.$el);
+        }
+      });
     },
     scrollTo(sectionId) {
-      this.currentSection = sectionId
-      const element = document.getElementById(sectionId)
-      if (element) {
-        window.scrollTo({
-          top: element.offsetTop,
+      const section = this.$refs[`${sectionId}Section`]?.$el;
+      if (section) {
+        this.$refs.mainContainer.scrollTo({
+          top: section.offsetTop,
           behavior: 'smooth'
-        })
+        });
       }
+    },
+    handleScroll() {
+      console.log(window.scrollY);
+      this.isScrolled = window.scrollY > 50;  // Change navbar style after scroll
     }
   }
 }
@@ -75,16 +85,19 @@ export default {
 
 <style>
 /* Base styles */
-html, body {
+html, body, #app {
   height: 100%;
   margin: 0;
   padding: 0;
+  overflow: hidden; /* Prevent double scrollbars */
 }
-
+body, html {
+  margin: 0;
+}
 #app {
-  height: 100vh;
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 /* Header styles */
@@ -93,27 +106,49 @@ header {
   top: 0;
   width: 100%;
   z-index: 100;
-  background: rgba(0, 0, 0, 0.8);
+  background: transparent;
   padding: 15px 0;
+  transition: background-color 0.3s ease-in-out;
+}
+
+header.scrolled {
+  background-color: rgba(0, 0, 0, 0.8);  /* Darker background when scrolled */
 }
 
 nav {
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 40px;
+  font-family: 'Bangers', cursive; /* Comic-style font */
+  font-size: 1.5rem;
+  
 }
 
 nav a {
-  color: white;
+  position: relative;
+  color: black;
   text-decoration: none;
-  padding: 5px 15px;
-  border-radius: 4px;
-  transition: all 0.3s ease;
+  padding: 10px 20px;
+  border: 3px solid #fff;
+  border-radius: 8px;
+  background: #ffeb3b;
+  color: #000;
+  font-weight: bold;
+  box-shadow: 3px 3px 0 #000;
+  transition: all 0.2s ease-in-out;
+}
+
+nav a:hover {
+  background: #ff4081;
+  color: #fff;
+  box-shadow: 0px 0px 10px #ff4081, 4px 4px 0 #000;
+  transform: scale(1.1) rotate(-1deg);
 }
 
 nav a.active {
-  background: #42b983;
-  color: white;
+  background: #00e676;
+  color: #000;
+  box-shadow: 4px 4px 0 #000;
 }
 
 /* Main content styles */
@@ -123,5 +158,7 @@ nav a.active {
   scroll-behavior: smooth;
   margin-top: 60px; /* Offset for fixed header */
   height: calc(100vh - 60px);
+  position: relative;
+  padding-top: 20px; /* Prevent content from being hidden under navbar */
 }
 </style>
