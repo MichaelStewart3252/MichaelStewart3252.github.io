@@ -1,8 +1,9 @@
 <template>
   <section class="fullpage-section">
     <div class="content">
-      <h2>About Me</h2>
-      <p>I am a creative software engineer that loves to explore just about anything! I </p>
+      <h2>A Little About Me</h2>
+      <p>I am a creative software engineer that loves to explore just about anything! I come
+        from a diverse background of problem solving, whether it be math, programming or economics.  </p>
     </div>
   </section>
 </template>
@@ -12,7 +13,7 @@ export default {
   name: 'AboutPage',
   mounted() {
     this.$el.id = 'about';
-    this.$el.style.minHeight = 'calc(100vh - 60px)';
+    this.$el.style.minHeight = 'calc(100vh)';
   }
 }
 </script>
