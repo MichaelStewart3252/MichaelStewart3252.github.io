@@ -3,28 +3,49 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import postcssNormalize from 'postcss-normalize'
+import postcssFontMagician from 'postcss-font-magician'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    vue(),
+    vue({
+      template: {
+        compilerOptions: {
+          whitespace: 'preserve'
+        }
+      }
+    }),
     vueDevTools(),
   ],
-  base: process.env.NODE_ENV === 'production' 
-    ? '/MichaelStewart3252.github.io/' // Your repo name
-    : '/',
+  base: '/',
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
   css: {
+    devSourcemap: true,
     postcss: {
       plugins: [
         postcssNormalize({
-          forceImport: true
+          forceImport: true,
+          allowDuplicates: false
+        }),
+        postcssFontMagician({
+          display: 'swap',
+          foundries: 'google'
         })
       ]
+    }
+  },
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true,
+    cssCodeSplit: true,
+    minify: 'terser',
+    terserOptions: {
+      format: {
+        comments: false
+      }
     }
   }
 })
