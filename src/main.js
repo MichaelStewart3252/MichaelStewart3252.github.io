@@ -1,7 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import router from './router/index.js'
+import './assets/reset.css' // Import the reset FIRST
+import './assets/base.css' // Then your existing styles
 
-createApp(App)
-  .use(router) // Use Vue Router
-  .mount('#app')
+createApp(App).mount('#app')
