@@ -1,8 +1,8 @@
 import { fileURLToPath, URL } from 'node:url'
-
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
+import postcssNormalize from 'postcss-normalize'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -10,10 +10,21 @@ export default defineConfig({
     vue(),
     vueDevTools(),
   ],
-  base: './',
+  base: process.env.NODE_ENV === 'production' 
+    ? '/MichaelStewart3252.github.io/' // Your repo name
+    : '/',
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
-    },
+    }
   },
+  css: {
+    postcss: {
+      plugins: [
+        postcssNormalize({
+          forceImport: true
+        })
+      ]
+    }
+  }
 })
