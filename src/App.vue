@@ -156,7 +156,7 @@ header {
   width: 100%;
   z-index: 100;
   background: transparent;
-  padding: 20px 0;
+  padding: 5px 0;
   transition: background-color 0.3s ease;
 }
 
@@ -168,10 +168,10 @@ nav {
   padding-top: 10px;
   display: flex;
   justify-content: center;
-  gap: 40px;
+  gap: 20px;
   font-family: 'Bangers', cursive;
-  font-size: 1.5rem;
-  height: 2.5em;
+  font-size: 1.1rem;
+  height: 3em;
 }
 
 nav a {

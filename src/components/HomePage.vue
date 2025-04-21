@@ -23,7 +23,7 @@ export default {
   height: calc(100vh - 60px); /* Adjust for fixed header */
   display: flex;
   align-items: center;
-  padding-left: 10%;
+  padding-left: 5%;
 
   background-image: url('/homepage.jpg');
   background-size: cover;
@@ -34,13 +34,13 @@ export default {
 .content {
   color: white;
   max-width: 50%;
-  font-size: 8em;
-  height:35%;
+  font-size: 6em;
+  height:10%;
   font-family: 'Bangers', cursive;
 }
 .personality{
-  margin-top: -120px;
-  font-size: 0.7em;
+  margin-top: 0px;
+  font-size: 0.5em;
 }
 @media (max-width: 768px) {
   .fullpage-section {
