@@ -4,7 +4,8 @@
       <h2>A Little About Me</h2>
       <p>
         I am a creative software engineer that loves to explore just about anything! I come
-        from a diverse background of problem solving, whether it be math, programming or economics. I know my resume is flying around here somewhere...
+        from a diverse background of problem solving, whether it be math, programming or economics.
+        I know my resume is flying around here somewhere...
       </p>
     </div>
 
@@ -161,11 +162,14 @@ export default {
   position: relative;
   overflow: hidden;
 }
-
+.content h2{
+  font-size:2em;
+  font-weight:bold;
+}
 .content {
-  color: white;
+  color: black;
+  font-size: 1.5em;
   max-width: 50%;
-  background: rgba(0, 0, 0, 0.7);
   padding: 2rem;
   border-radius: 8px;
   z-index: 1;
