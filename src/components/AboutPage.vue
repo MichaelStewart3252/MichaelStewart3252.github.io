@@ -4,7 +4,7 @@
       <h2>A Little About Me</h2>
       <p>
         I am a creative software engineer that loves to explore just about anything! I come
-        from a diverse background of problem solving, whether it be math, programming or economics.
+        from a diverse background of problem solving, whether it be math, programming or economics. I know my resume is flying around here somewhere...
       </p>
     </div>
 
