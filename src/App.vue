@@ -8,7 +8,7 @@
         <a href="#home" @click.prevent="scrollTo('home')" :class="{ active: currentSection === 'home' }">Home</a>
         <a href="#about" @click.prevent="scrollTo('about')" :class="{ active: currentSection === 'about' }">About</a>
         <a href="#projects" @click.prevent="scrollTo('projects')" :class="{ active: currentSection === 'projects' }">Projects</a>
-        <!-- Add more nav items as needed -->
+        <a href="#contact" @click.prevent="scrollTo('contact')" :class="{ active: currentSection === 'contact' }">Contact Me</a>
       </nav>
     </header>
 
@@ -24,6 +24,9 @@
   <section id="projects">
     <ProjectPage ref="projectSection" />
   </section>
+  <section id="contact">
+    <ContactPage ref="contactSection" />
+  </section>
 </main>
   </div>
 </template>
@@ -32,9 +35,10 @@
 import HomePage from '@/components/HomePage.vue'
 import AboutPage from '@/components/AboutPage.vue'
 import ProjectPage from '@/components/ProjectPage.vue'
+import ContactPage from '@/components/ContactPage.vue'
 
 export default {
-  components: { HomePage, AboutPage, ProjectPage },
+  components: { HomePage, AboutPage, ProjectPage, ContactPage },
   data() {
     return {
       currentSection: 'home',
@@ -79,7 +83,7 @@ export default {
   }, options);
 
   // Observe each section by ID
-  ['home', 'about', 'projects'].forEach(id => {
+  ['home', 'about', 'projects', 'contact'].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
       this.observer.observe(el);
@@ -109,7 +113,34 @@ export default {
   background-repeat: no-repeat;
   transition: background-image 0.5s ease-in-out;
 }
+::-webkit-scrollbar {
+  width: 12px; /* Scrollbar width */
+}
 
+::-webkit-scrollbar-track {
+  background: #333; /* Dark background for the track */
+  border-radius: 10px; /* Rounded corners */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #bdbdbd; /* Darker thumb color */
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ff5e93; /* Lighter color on hover */
+}
+
+/* Optional: For vertical scrollbar */
+::-webkit-scrollbar:vertical {
+  width: 12px;
+}
+
+/* Optional: For horizontal scrollbar */
+::-webkit-scrollbar:horizontal {
+  height: 12px;
+}
 /* Define individual background classes */
 .home-bg {
   background-image: url('/homepage.jpg');
@@ -123,7 +154,9 @@ export default {
   background-image: url('/projectspage.jpg');
 }
 
-
+.contact-bg{
+  background-image: url('/contact.jpg');
+}
 /* Ensure content containers are transparent */
 #app, .scroll-container {
   background: transparent !important;

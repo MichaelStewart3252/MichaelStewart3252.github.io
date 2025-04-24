@@ -40,7 +40,7 @@
             </p>
             <div class="project-link">
               <a
-                href="https://github.com/MichaelStewart3252/FullStackWebsite"
+                href="https://github.com/MichaelStewart3252/MLmodel"
                 target="_blank"
                 rel="noopener noreferrer"
               >
