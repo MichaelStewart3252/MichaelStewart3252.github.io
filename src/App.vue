@@ -29,7 +29,7 @@
 
         <!-- Angry face after 4 clicks -->
         <div v-if="showAngryFace && !answered" class="angry-screen">
-          <img src="https://media.giphy.com/media/l4FGuhL4U2WyjdkaY/giphy.gif" alt="Angry">
+          <img src="https://media.giphy.com/media/d10dMmzqCYqQ0/giphy.gif" alt="Angry">
           <p>you hate me</p>
         </div>
 
@@ -79,7 +79,7 @@ function moveButton() {
 function sayYes() {
   answered.value = true
   
-  // Create confetti
+  // Create confetti with flowers
   for (let i = 0; i < 150; i++) {
     setTimeout(() => {
       const confetti = document.createElement('div')
@@ -87,11 +87,17 @@ function sayYes() {
       confetti.style.left = Math.random() * window.innerWidth + 'px'
       confetti.style.top = '-10px'
       
-      const shapes = ['❤️', '💕', '💖', '✨', '🎉', '⭐', '💝']
+      const flowers = ['🌸', '🌺', '🌷', '🌹', '💐', '🌼', '🏵️', '🌻']
+      const hearts = ['❤️', '💕', '💖', '✨', '💝']
       const colors = ['#ff1493', '#ff69b4', '#ff85c1', '#ffc0cb', '#ff6b9d']
       
-      if (Math.random() > 0.5) {
-        confetti.innerHTML = shapes[Math.floor(Math.random() * shapes.length)]
+      // 70% flowers, 30% hearts/sparkles
+      if (Math.random() > 0.3) {
+        confetti.innerHTML = flowers[Math.floor(Math.random() * flowers.length)]
+        confetti.style.fontSize = (15 + Math.random() * 15) + 'px'
+        confetti.style.background = 'transparent'
+      } else if (Math.random() > 0.5) {
+        confetti.innerHTML = hearts[Math.floor(Math.random() * hearts.length)]
         confetti.style.fontSize = '20px'
         confetti.style.background = 'transparent'
       } else {
