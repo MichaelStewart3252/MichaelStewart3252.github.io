@@ -29,12 +29,13 @@
 
         <!-- Angry face after 4 clicks -->
         <div v-if="showAngryFace && !answered" class="angry-screen">
-          <img src="https://media.giphy.com/media/d10dMmzqCYqQ0/giphy.gif" alt="Angry">
+          <img src="https://media.giphy.com/media/m8fyrgnXwXV5EHw6Lm/giphy.gif" alt="Angry">
           <p>you hate me</p>
         </div>
 
         <!-- Success message -->
         <div v-if="answered" class="success">
+          <img :src="lizImage" alt="Liz" class="success-image">
           <div class="heart-icon dancing">💕</div>
           <h1>I love you! 💖</h1>
           <p class="special-message">You make everything better. Can't wait to spend Valentine's Day with you ✨</p>
@@ -46,6 +47,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import lizImage from '@/assets/liz.jpg'
 
 const answered = ref(false)
 const noButtonMoveCount = ref(0)
@@ -309,6 +311,20 @@ button {
 /* Success screen */
 .success {
   animation: fadeIn 1s ease-in;
+}
+
+.success-image {
+  width: 250px;
+  max-width: 100%;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(255, 20, 147, 0.3);
+  margin-bottom: 20px;
+  animation: gentle-float 3s ease-in-out infinite;
+}
+
+@keyframes gentle-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
 }
 
 .success h1 {
