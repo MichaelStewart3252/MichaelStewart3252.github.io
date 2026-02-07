@@ -1,258 +1,241 @@
 <template>
-  <div id="app">
-    <!-- Dynamic background that changes per section -->
-    <div class="background-container" :class="currentBackground"></div>
-    
-    <header :class="{ scrolled: isScrolled }">
-      <nav>
-        <a href="#home" @click.prevent="scrollTo('home')" :class="{ active: currentSection === 'home' }">Home</a>
-        <a href="#about" @click.prevent="scrollTo('about')" :class="{ active: currentSection === 'about' }">About</a>
-        <a href="#projects" @click.prevent="scrollTo('projects')" :class="{ active: currentSection === 'projects' }">Projects</a>
-        <a href="#contact" @click.prevent="scrollTo('contact')" :class="{ active: currentSection === 'contact' }">Contact Me</a>
-      </nav>
-    </header>
+  <div class="valentine-container">
+    <!-- Floating hearts background -->
+    <div class="heart-bg" style="top: 10%; left: 10%;">💕</div>
+    <div class="heart-bg" style="top: 20%; right: 15%; animation-delay: 1s;">💗</div>
+    <div class="heart-bg" style="bottom: 15%; left: 20%; animation-delay: 2s;">💖</div>
+    <div class="heart-bg" style="bottom: 25%; right: 10%; animation-delay: 1.5s;">💝</div>
+    <div class="heart-bg" style="top: 50%; left: 5%; animation-delay: 0.5s;">💓</div>
+    <div class="heart-bg" style="top: 60%; right: 5%; animation-delay: 2.5s;">💕</div>
 
-    <main class="scroll-container" ref="mainContainer">
-  <section id="home">
-    <HomePage ref="homeSection" />
-  </section>
-  
-  <section id="about">
-    <AboutPage ref="aboutSection" />
-  </section>
-  
-  <section id="projects">
-    <ProjectPage ref="projectSection" />
-  </section>
-  <section id="contact">
-    <ContactPage ref="contactSection" />
-  </section>
-</main>
+    <div class="container">
+      <div v-if="!answered" class="main-content">
+        <div class="heart-icon">💝</div>
+        <h1>Will You Be My Valentine?</h1>
+        <p>I promise endless laughter, sweet moments, and maybe some terrible jokes along the way...</p>
+        
+        <div class="buttons">
+          <button class="yes-btn" @click="sayYes">Yes! 💕</button>
+          <button 
+            class="no-btn" 
+            @click="moveButton"
+            :style="noButtonStyle"
+          >
+            {{ noButtonText }}
+          </button>
+        </div>
+      </div>
+
+      <div v-else class="success">
+        <div class="heart-icon">🥰</div>
+        <h1>Yay! Best Valentine's Ever! 💕</h1>
+        <p>You just made me the happiest person! Get ready for the best Valentine's Day together!</p>
+        <p class="message">I can't wait to celebrate with you! 💖</p>
+      </div>
+    </div>
   </div>
 </template>
 
-<script>
-import HomePage from '@/components/HomePage.vue'
-import AboutPage from '@/components/AboutPage.vue'
-import ProjectPage from '@/components/ProjectPage.vue'
-import ContactPage from '@/components/ContactPage.vue'
+<script setup>
+import { ref } from 'vue'
 
-export default {
-  components: { HomePage, AboutPage, ProjectPage, ContactPage },
-  data() {
-    return {
-      currentSection: 'home',
-      currentBackground: 'home-bg',
-      observer: null,
-      isScrolled: false
-    }
-  },
-  watch: {
-    currentSection(newVal) {
-      this.currentBackground = `${newVal}-bg`
-    }
-  },
-  mounted() {
-    this.$nextTick(() => {
-      this.setupIntersectionObserver()
-      window.addEventListener('scroll', this.handleScroll)
-    })
-  },
-  methods: {
-    scrollTo(section) {
-  const target = document.getElementById(section);
-  if (target) {
-    target.scrollIntoView({ behavior: 'smooth' });
+const answered = ref(false)
+const noButtonMoveCount = ref(0)
+const noButtonText = ref('No')
+const noButtonStyle = ref({})
+
+function moveButton() {
+  // Make the No button run away
+  const maxX = window.innerWidth - 150
+  const maxY = window.innerHeight - 100
+  
+  const randomX = Math.random() * maxX
+  const randomY = Math.random() * maxY
+  
+  noButtonStyle.value = {
+    position: 'fixed',
+    left: randomX + 'px',
+    top: randomY + 'px',
+    transition: 'all 0.3s ease'
   }
-},
-    handleScroll() {
-      this.isScrolled = window.scrollY > 50
-    },
-    setupIntersectionObserver() {
-  const options = {
-    root: this.$refs.mainContainer,
-    threshold: 0.6
-  };
-
-  this.observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        this.currentSection = entry.target.id;
-      }
-    });
-  }, options);
-
-  // Observe each section by ID
-  ['home', 'about', 'projects', 'contact'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-      this.observer.observe(el);
-    }
-  });
+  
+  noButtonMoveCount.value++
+  
+  // Make it harder to say no
+  if (noButtonMoveCount.value === 3) {
+    noButtonText.value = 'Still no?'
+  } else if (noButtonMoveCount.value === 5) {
+    noButtonText.value = 'Really? 🥺'
+  } else if (noButtonMoveCount.value === 7) {
+    noButtonText.value = 'Please? 💔'
+  }
 }
 
+function sayYes() {
+  answered.value = true
+  
+  // Create confetti
+  for (let i = 0; i < 100; i++) {
+    setTimeout(() => {
+      const confetti = document.createElement('div')
+      confetti.className = 'confetti'
+      confetti.style.left = Math.random() * window.innerWidth + 'px'
+      confetti.style.top = '-10px'
+      confetti.style.background = ['#ff1493', '#ff69b4', '#ff85c1', '#ffc0cb'][Math.floor(Math.random() * 4)]
+      confetti.style.animationDelay = Math.random() * 0.5 + 's'
+      document.body.appendChild(confetti)
+      
+      setTimeout(() => confetti.remove(), 3000)
+    }, i * 30)
   }
 }
 </script>
 
-<style>
-
-* {
-  box-sizing: border-box;
-}
-/* Background container - fixed position covers entire viewport */
-.background-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  transition: background-image 0.5s ease-in-out;
-}
-::-webkit-scrollbar {
-  width: 12px; /* Scrollbar width */
-}
-
-::-webkit-scrollbar-track {
-  background: #333; /* Dark background for the track */
-  border-radius: 10px; /* Rounded corners */
-}
-
-::-webkit-scrollbar-thumb {
-  background: #bdbdbd; /* Darker thumb color */
-  border-radius: 10px;
-  transition: background 0.3s ease;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #ff5e93; /* Lighter color on hover */
-}
-
-/* Optional: For vertical scrollbar */
-::-webkit-scrollbar:vertical {
-  width: 12px;
-}
-
-/* Optional: For horizontal scrollbar */
-::-webkit-scrollbar:horizontal {
-  height: 12px;
-}
-/* Define individual background classes */
-.home-bg {
-  background-image: url('/homepage.jpg');
-}
-
-.about-bg {
-  background-image: url('/about.jpg');
-}
-
-.projects-bg{
-  background-image: url('/projectspage.jpg');
-}
-
-.contact-bg{
-  background-image: url('/contact.jpg');
-}
-/* Ensure content containers are transparent */
-#app, .scroll-container {
-  background: transparent !important;
-}
-
-/* Header styling - now with glass morphism effect */
-header {
-  background: transparent;
-  /* ... rest of your header styles ... */
-}
-/* Base styles */
-html, body, #app {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
-}
-
-#app {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  position: relative; /* Needed for absolute positioning of background */
-}
-
-/* Header styles */
-header {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 100;
-  background: transparent;
-  padding: 5px 0;
-  transition: background-color 0.3s ease;
-}
-
-header.scrolled {
-  background-color: rgba(0, 0, 0, 0.8);
-}
-
-nav {
-  padding-top: 10px;
+<style scoped>
+.valentine-container {
+  min-height: 100vh;
   display: flex;
   justify-content: center;
-  gap: 20px;
-  font-family: 'Bangers', cursive;
-  font-size: 1.1rem;
-  height: 3em;
-}
-
-nav a {
+  align-items: center;
+  background: linear-gradient(135deg, #ffeef8 0%, #ffe0f0 100%);
+  overflow: hidden;
   position: relative;
-  color: black;
-  text-decoration: none;
-  padding: 5px 20px;
-  border: 3px solid #fff;
-  border-radius: 8px;
-  background: rgba(211, 211, 211, 0.704);
-  color: #000;
-  font-weight: bold;
-  box-shadow: 3px 3px 0 #000;
-  transition: all 0.2s ease-in-out;
 }
 
-nav a:hover {
-  background: #ff5e93;
-  color: #fff;
-  box-shadow: 0px 0px 10px #ff5e93, 4px 4px 0 #000;
-  transform: scale(1.1) rotate(-1deg);
+/* Floating hearts background */
+.heart-bg {
+  position: absolute;
+  font-size: 20px;
+  opacity: 0.3;
+  animation: float 10s infinite;
 }
 
-nav a.active {
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(10deg); }
+}
+
+.container {
   background: white;
-  color: #000;
-  box-shadow: 4px 4px 0 #000;
-}
-
-/* Main content styles */
-.scroll-container {
-  flex: 1;
-  overflow-y: auto;
-  scroll-behavior: smooth;
-  height: calc(100vh);
+  padding: 60px 40px;
+  border-radius: 30px;
+  box-shadow: 0 20px 60px rgba(255, 105, 180, 0.3);
+  text-align: center;
+  max-width: 500px;
+  width: 90%;
   position: relative;
-  background: transparent; /* Ensure content area is transparent */
+  z-index: 1;
+  animation: fadeIn 1s ease-in;
 }
 
-/* Mobile responsiveness */
-@media (max-width: 768px) {
-  nav {
-    gap: 20px;
-    font-size: 1.2rem;
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.heart-icon {
+  font-size: 80px;
+  animation: heartbeat 1.5s infinite;
+  display: inline-block;
+  margin-bottom: 20px;
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  10%, 30% { transform: scale(1.1); }
+  20%, 40% { transform: scale(1); }
+}
+
+h1 {
+  color: #ff1493;
+  font-size: 2.5em;
+  margin-bottom: 20px;
+  font-weight: normal;
+  font-family: 'Georgia', serif;
+}
+
+p {
+  color: #666;
+  font-size: 1.2em;
+  line-height: 1.6;
+  margin-bottom: 40px;
+  font-family: 'Georgia', serif;
+}
+
+.buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+button {
+  padding: 15px 40px;
+  font-size: 1.1em;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  font-family: 'Georgia', serif;
+}
+
+.yes-btn {
+  background: linear-gradient(135deg, #ff1493, #ff69b4);
+  color: white;
+  box-shadow: 0 4px 15px rgba(255, 20, 147, 0.4);
+}
+
+.yes-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(255, 20, 147, 0.6);
+}
+
+.no-btn {
+  background: #f0f0f0;
+  color: #999;
+  position: relative;
+}
+
+.no-btn:hover {
+  background: #e0e0e0;
+}
+
+.success {
+  animation: fadeIn 1s ease-in;
+}
+
+.message {
+  font-size: 1.1em;
+  color: #666;
+  margin-top: 20px;
+  font-style: italic;
+}
+</style>
+
+<style>
+/* Global styles for confetti (not scoped) */
+.confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  background: #ff1493;
+  position: absolute;
+  animation: confetti-fall 3s linear;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+@keyframes confetti-fall {
+  to {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
   }
-  
-  nav a {
-    padding: 8px 15px;
-  }
+}
+
+/* Reset body styles */
+body {
+  margin: 0;
+  padding: 0;
 }
 </style>
