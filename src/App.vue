@@ -1,36 +1,39 @@
 <template>
-  <div class="valentine-container">
-    <!-- Floating hearts background -->
-    <div class="heart-bg" style="top: 10%; left: 10%;">💕</div>
-    <div class="heart-bg" style="top: 20%; right: 15%; animation-delay: 1s;">💗</div>
-    <div class="heart-bg" style="bottom: 15%; left: 20%; animation-delay: 2s;">💖</div>
-    <div class="heart-bg" style="bottom: 25%; right: 10%; animation-delay: 1.5s;">💝</div>
-    <div class="heart-bg" style="top: 50%; left: 5%; animation-delay: 0.5s;">💓</div>
-    <div class="heart-bg" style="top: 60%; right: 5%; animation-delay: 2.5s;">💕</div>
+  <div class="valentine-wrapper">
+    <div class="valentine-container">
+      <!-- Floating hearts background -->
+      <div class="heart-bg" style="top: 10%; left: 10%;">💕</div>
+      <div class="heart-bg" style="top: 20%; right: 15%; animation-delay: 1s;">💗</div>
+      <div class="heart-bg" style="bottom: 15%; left: 20%; animation-delay: 2s;">💖</div>
+      <div class="heart-bg" style="bottom: 25%; right: 10%; animation-delay: 1.5s;">💝</div>
+      <div class="heart-bg" style="top: 50%; left: 5%; animation-delay: 0.5s;">💓</div>
+      <div class="heart-bg" style="top: 60%; right: 5%; animation-delay: 2.5s;">💕</div>
 
-    <div class="container">
-      <div v-if="!answered" class="main-content">
-        <div class="heart-icon">💝</div>
-        <h1>Will You Be My Valentine?</h1>
-        <p>I promise endless laughter, sweet moments, and maybe some terrible jokes along the way...</p>
-        
-        <div class="buttons">
-          <button class="yes-btn" @click="sayYes">Yes! 💕</button>
-          <button 
-            class="no-btn" 
-            @click="moveButton"
-            :style="noButtonStyle"
-          >
-            {{ noButtonText }}
-          </button>
+      <div class="card-container">
+        <div v-if="!answered" class="main-content">
+          <div class="heart-icon">💝</div>
+          <h1>Will You Be My Valentine?</h1>
+          <p>I promise endless laughter, sweet moments, and maybe some terrible jokes along the way...</p>
+          
+          <div class="buttons">
+            <button class="yes-btn" @click="sayYes">Yes! 💕</button>
+            <button 
+              class="no-btn" 
+              @click="moveButton"
+              :style="noButtonStyle"
+              ref="noButton"
+            >
+              {{ noButtonText }}
+            </button>
+          </div>
         </div>
-      </div>
 
-      <div v-else class="success">
-        <div class="heart-icon">🥰</div>
-        <h1>Yay! Best Valentine's Ever! 💕</h1>
-        <p>You just made me the happiest person! Get ready for the best Valentine's Day together!</p>
-        <p class="message">I can't wait to celebrate with you! 💖</p>
+        <div v-else class="success">
+          <div class="heart-icon">🥰</div>
+          <h1>Yay! Best Valentine's Ever! 💕</h1>
+          <p>You just made me the happiest person! Get ready for the best Valentine's Day together!</p>
+          <p class="message">I can't wait to celebrate with you! 💖</p>
+        </div>
       </div>
     </div>
   </div>
@@ -43,6 +46,7 @@ const answered = ref(false)
 const noButtonMoveCount = ref(0)
 const noButtonText = ref('No')
 const noButtonStyle = ref({})
+const noButton = ref(null)
 
 function moveButton() {
   // Make the No button run away
@@ -56,7 +60,8 @@ function moveButton() {
     position: 'fixed',
     left: randomX + 'px',
     top: randomY + 'px',
-    transition: 'all 0.3s ease'
+    transition: 'all 0.3s ease',
+    zIndex: 1000
   }
   
   noButtonMoveCount.value++
@@ -91,14 +96,53 @@ function sayYes() {
 }
 </script>
 
+<style>
+/* Global reset for this page */
+* {
+  box-sizing: border-box;
+}
+
+/* Global styles for confetti (not scoped) */
+.confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  background: #ff1493;
+  animation: confetti-fall 3s linear;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+@keyframes confetti-fall {
+  to {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+</style>
+
 <style scoped>
+.valentine-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: linear-gradient(135deg, #ffeef8 0%, #ffe0f0 100%);
+  z-index: 9999;
+}
+
 .valentine-container {
-  min-height: 100vh;
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #ffeef8 0%, #ffe0f0 100%);
-  overflow: hidden;
   position: relative;
 }
 
@@ -108,6 +152,7 @@ function sayYes() {
   font-size: 20px;
   opacity: 0.3;
   animation: float 10s infinite;
+  pointer-events: none;
 }
 
 @keyframes float {
@@ -115,7 +160,7 @@ function sayYes() {
   50% { transform: translateY(-20px) rotate(10deg); }
 }
 
-.container {
+.card-container {
   background: white;
   padding: 60px 40px;
   border-radius: 30px;
@@ -194,7 +239,6 @@ button {
 .no-btn {
   background: #f0f0f0;
   color: #999;
-  position: relative;
 }
 
 .no-btn:hover {
@@ -211,31 +255,23 @@ button {
   margin-top: 20px;
   font-style: italic;
 }
-</style>
 
-<style>
-/* Global styles for confetti (not scoped) */
-.confetti {
-  position: fixed;
-  width: 10px;
-  height: 10px;
-  background: #ff1493;
-  position: absolute;
-  animation: confetti-fall 3s linear;
-  pointer-events: none;
-  z-index: 9999;
-}
-
-@keyframes confetti-fall {
-  to {
-    transform: translateY(100vh) rotate(360deg);
-    opacity: 0;
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+  .card-container {
+    padding: 40px 30px;
   }
-}
-
-/* Reset body styles */
-body {
-  margin: 0;
-  padding: 0;
+  
+  h1 {
+    font-size: 2em;
+  }
+  
+  p {
+    font-size: 1em;
+  }
+  
+  .heart-icon {
+    font-size: 60px;
+  }
 }
 </style>
