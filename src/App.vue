@@ -29,15 +29,15 @@
 
         <!-- Angry face after 4 clicks -->
         <div v-if="showAngryFace && !answered" class="angry-screen">
-          <img src="https://media.giphy.com/media/6uGhT1O4sxpi8/giphy.gif" alt="Angry cat">
-          <h1>😡</h1>
-          <p>Really? REALLY?!</p>
+          <img src="https://media.giphy.com/media/l4FGuhL4U2WyjdkaY/giphy.gif" alt="Angry">
+          <p>you hate me</p>
         </div>
 
         <!-- Success message -->
         <div v-if="answered" class="success">
           <div class="heart-icon dancing">💕</div>
           <h1>I love you! 💖</h1>
+          <p class="special-message">You make everything better. Can't wait to spend Valentine's Day with you ✨</p>
         </div>
       </div>
     </div>
@@ -308,6 +308,14 @@ button {
 .success h1 {
   font-size: 3em;
   animation: rainbow 3s infinite;
+}
+
+.special-message {
+  font-size: 1.3em;
+  color: #ff1493;
+  font-style: italic;
+  margin-top: 30px;
+  line-height: 1.8;
 }
 
 @keyframes rainbow {
