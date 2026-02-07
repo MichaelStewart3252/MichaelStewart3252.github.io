@@ -10,10 +10,10 @@
       <div class="heart-bg" style="top: 60%; right: 5%; animation-delay: 2.5s;">💕</div>
 
       <div class="card-container">
-        <div v-if="!answered" class="main-content">
+        <div v-if="!answered && !showAngryFace" class="main-content">
           <div class="heart-icon">💝</div>
           <h1>Will You Be My Valentine?</h1>
-          <p>I promise endless laughter, sweet moments, and maybe some terrible jokes along the way...</p>
+          <p>No pressure, but I built an entire website for this so... 👀</p>
           
           <div class="buttons">
             <button class="yes-btn" @click="sayYes">Yes! 💕</button>
@@ -21,39 +21,23 @@
               class="no-btn" 
               @click="moveButton"
               :style="noButtonStyle"
-              ref="noButton"
             >
-              {{ noButtonText }}
+              No
             </button>
-          </div>
-
-          <!-- Angry cat appears when trying to say no -->
-          <div v-if="noButtonMoveCount > 0" class="angry-cat">
-            <img src="https://media.giphy.com/media/6uGhT1O4sxpi8/giphy.gif" alt="Angry cat">
-            <p class="cat-message">{{ catMessage }}</p>
           </div>
         </div>
 
-        <div v-else class="success">
-          <div class="celebration-emojis">
-            <span class="bounce" style="animation-delay: 0s;">🎉</span>
-            <span class="bounce" style="animation-delay: 0.1s;">💕</span>
-            <span class="bounce" style="animation-delay: 0.2s;">🥳</span>
-            <span class="bounce" style="animation-delay: 0.3s;">💖</span>
-            <span class="bounce" style="animation-delay: 0.4s;">✨</span>
-          </div>
-          <div class="heart-icon dancing">🥰</div>
-          <h1 class="rainbow-text">YAAAASSS! Best Valentine EVER! 💕</h1>
-          <p class="excited-text">You just made me the HAPPIEST person in the ENTIRE UNIVERSE!</p>
-          <p class="message goofy">Get ready for:</p>
-          <ul class="fun-list">
-            <li>🍕 Pizza dates (extra cheese obvs)</li>
-            <li>🎮 Gaming marathons</li>
-            <li>🎬 Movie nights with too much popcorn</li>
-            <li>😂 My terrible jokes (you signed up for this!)</li>
-            <li>💝 So much love it's honestly embarrassing</li>
-          </ul>
-          <p class="final-message">LET'S GOOOOOO! 🚀💖</p>
+        <!-- Angry face after 4 clicks -->
+        <div v-if="showAngryFace && !answered" class="angry-screen">
+          <img src="https://media.giphy.com/media/6uGhT1O4sxpi8/giphy.gif" alt="Angry cat">
+          <h1>😡</h1>
+          <p>Really? REALLY?!</p>
+        </div>
+
+        <!-- Success message -->
+        <div v-if="answered" class="success">
+          <div class="heart-icon dancing">💕</div>
+          <h1>I love you! 💖</h1>
         </div>
       </div>
     </div>
@@ -61,24 +45,22 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 
 const answered = ref(false)
 const noButtonMoveCount = ref(0)
-const noButtonText = ref('No')
 const noButtonStyle = ref({})
-const noButton = ref(null)
-
-const catMessage = computed(() => {
-  if (noButtonMoveCount.value === 1) return "😾 The cat is judging you..."
-  if (noButtonMoveCount.value === 3) return "😾 Cat is getting REALLY mad..."
-  if (noButtonMoveCount.value === 5) return "😾 CAT RAGE INTENSIFIES!!"
-  if (noButtonMoveCount.value >= 7) return "😾 You've made a powerful enemy today..."
-  return "😾 Angry cat disapproves!"
-})
+const showAngryFace = ref(false)
 
 function moveButton() {
-  // Make the No button run away faster each time
+  noButtonMoveCount.value++
+  
+  if (noButtonMoveCount.value >= 4) {
+    showAngryFace.value = true
+    return
+  }
+  
+  // Make the No button run away
   const maxX = window.innerWidth - 150
   const maxY = window.innerHeight - 100
   
@@ -92,25 +74,12 @@ function moveButton() {
     transition: 'all 0.3s ease',
     zIndex: 1000
   }
-  
-  noButtonMoveCount.value++
-  
-  // Make it harder to say no
-  if (noButtonMoveCount.value === 3) {
-    noButtonText.value = 'Still no?? 😢'
-  } else if (noButtonMoveCount.value === 5) {
-    noButtonText.value = 'REALLY?? 🥺'
-  } else if (noButtonMoveCount.value === 7) {
-    noButtonText.value = 'PLEASE??? 💔'
-  } else if (noButtonMoveCount.value >= 9) {
-    noButtonText.value = 'NOOOO 😭'
-  }
 }
 
 function sayYes() {
   answered.value = true
   
-  // Create TONS of confetti
+  // Create confetti
   for (let i = 0; i < 150; i++) {
     setTimeout(() => {
       const confetti = document.createElement('div')
@@ -253,34 +222,12 @@ h1 {
   font-family: 'Georgia', serif;
 }
 
-.rainbow-text {
-  animation: rainbow 3s infinite;
-  font-size: 2.2em !important;
-  font-weight: bold !important;
-}
-
-@keyframes rainbow {
-  0% { color: #ff1493; }
-  25% { color: #ff69b4; }
-  50% { color: #ff85c1; }
-  75% { color: #ff69b4; }
-  100% { color: #ff1493; }
-}
-
 p {
   color: #666;
   font-size: 1.2em;
   line-height: 1.6;
   margin-bottom: 40px;
   font-family: 'Georgia', serif;
-}
-
-.excited-text {
-  font-weight: bold;
-  font-size: 1.3em !important;
-  color: #ff1493;
-  text-transform: uppercase;
-  letter-spacing: 1px;
 }
 
 .buttons {
@@ -328,114 +275,47 @@ button {
   background: #e0e0e0;
 }
 
-.angry-cat {
-  margin-top: 30px;
-  animation: shake 0.5s infinite;
+/* Angry face screen */
+.angry-screen {
+  animation: fadeIn 0.5s ease-in;
 }
 
-.angry-cat img {
-  width: 200px;
+.angry-screen img {
+  width: 300px;
+  max-width: 100%;
   border-radius: 15px;
   box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  margin-bottom: 20px;
 }
 
-.cat-message {
-  margin-top: 15px;
+.angry-screen h1 {
+  font-size: 4em;
+  margin: 20px 0;
+}
+
+.angry-screen p {
+  font-size: 1.5em;
   font-weight: bold;
-  color: #ff4444;
-  font-size: 1.1em;
+  color: #ff1493;
+  margin-bottom: 20px;
 }
 
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  75% { transform: translateX(5px); }
-}
-
+/* Success screen */
 .success {
   animation: fadeIn 1s ease-in;
 }
 
-.celebration-emojis {
-  font-size: 40px;
-  margin-bottom: 20px;
-  display: flex;
-  justify-content: center;
-  gap: 10px;
+.success h1 {
+  font-size: 3em;
+  animation: rainbow 3s infinite;
 }
 
-.celebration-emojis .bounce {
-  display: inline-block;
-  animation: bounce 1s infinite;
-}
-
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
-}
-
-.fun-list {
-  text-align: left;
-  max-width: 400px;
-  margin: 20px auto;
-  list-style: none;
-  padding: 0;
-}
-
-.fun-list li {
-  padding: 10px;
-  margin: 8px 0;
-  background: linear-gradient(135deg, #fff0f8, #ffe8f3);
-  border-radius: 10px;
-  font-size: 1.1em;
-  animation: slideIn 0.5s ease-out forwards;
-  opacity: 0;
-}
-
-.fun-list li:nth-child(1) { animation-delay: 0.2s; }
-.fun-list li:nth-child(2) { animation-delay: 0.4s; }
-.fun-list li:nth-child(3) { animation-delay: 0.6s; }
-.fun-list li:nth-child(4) { animation-delay: 0.8s; }
-.fun-list li:nth-child(5) { animation-delay: 1s; }
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.message {
-  font-size: 1.1em;
-  color: #666;
-  margin-top: 20px;
-  font-style: italic;
-}
-
-.message.goofy {
-  font-size: 1.3em;
-  font-weight: bold;
-  color: #ff1493;
-  font-style: normal;
-}
-
-.final-message {
-  font-size: 1.5em !important;
-  font-weight: bold !important;
-  color: #ff1493;
-  margin-top: 30px !important;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  animation: wiggle 1s infinite;
-}
-
-@keyframes wiggle {
-  0%, 100% { transform: rotate(-3deg); }
-  50% { transform: rotate(3deg); }
+@keyframes rainbow {
+  0% { color: #ff1493; }
+  25% { color: #ff69b4; }
+  50% { color: #ff85c1; }
+  75% { color: #ff69b4; }
+  100% { color: #ff1493; }
 }
 
 /* Mobile responsiveness */
@@ -448,10 +328,6 @@ button {
     font-size: 2em;
   }
   
-  .rainbow-text {
-    font-size: 1.8em !important;
-  }
-  
   p {
     font-size: 1em;
   }
@@ -460,12 +336,12 @@ button {
     font-size: 60px;
   }
   
-  .angry-cat img {
-    width: 150px;
+  .angry-screen img {
+    width: 200px;
   }
   
-  .fun-list {
-    font-size: 0.9em;
+  .success h1 {
+    font-size: 2em;
   }
 }
 </style>
