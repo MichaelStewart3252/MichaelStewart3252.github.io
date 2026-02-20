@@ -1,377 +1,258 @@
 <template>
-  <div class="valentine-wrapper">
-    <div class="valentine-container">
-      <!-- Floating hearts background -->
-      <div class="heart-bg" style="top: 10%; left: 10%;">💕</div>
-      <div class="heart-bg" style="top: 20%; right: 15%; animation-delay: 1s;">💗</div>
-      <div class="heart-bg" style="bottom: 15%; left: 20%; animation-delay: 2s;">💖</div>
-      <div class="heart-bg" style="bottom: 25%; right: 10%; animation-delay: 1.5s;">💝</div>
-      <div class="heart-bg" style="top: 50%; left: 5%; animation-delay: 0.5s;">💓</div>
-      <div class="heart-bg" style="top: 60%; right: 5%; animation-delay: 2.5s;">💕</div>
+  <div id="app">
+    <!-- Dynamic background that changes per section -->
+    <div class="background-container" :class="currentBackground"></div>
+    
+    <header :class="{ scrolled: isScrolled }">
+      <nav>
+        <a href="#home" @click.prevent="scrollTo('home')" :class="{ active: currentSection === 'home' }">Home</a>
+        <a href="#about" @click.prevent="scrollTo('about')" :class="{ active: currentSection === 'about' }">About</a>
+        <a href="#projects" @click.prevent="scrollTo('projects')" :class="{ active: currentSection === 'projects' }">Projects</a>
+        <a href="#contact" @click.prevent="scrollTo('contact')" :class="{ active: currentSection === 'contact' }">Contact Me</a>
+      </nav>
+    </header>
 
-      <div class="card-container">
-        <div v-if="!answered && !showAngryFace" class="main-content">
-          <div class="heart-icon">💝</div>
-          <h1>Will You Be My Valentine?</h1>
-          <p>No pressure, but I built an entire website for this so... 👀</p>
-          
-          <div class="buttons">
-            <button class="yes-btn" @click="sayYes">Yes! 💕</button>
-            <button 
-              class="no-btn" 
-              @click="moveButton"
-              :style="noButtonStyle"
-            >
-              No
-            </button>
-          </div>
-        </div>
-
-        <!-- Angry face after 4 clicks -->
-        <div v-if="showAngryFace && !answered" class="angry-screen">
-          <img src="https://media.giphy.com/media/m8fyrgnXwXV5EHw6Lm/giphy.gif" alt="Angry">
-          <p>you hate me</p>
-        </div>
-
-        <!-- Success message -->
-        <div v-if="answered" class="success">
-          <img :src="lizImage" alt="Liz" class="success-image">
-          <div class="heart-icon dancing">💕</div>
-          <h1>I love you! 💖</h1>
-          <p class="special-message">You make everything better. Can't wait to spend Valentine's Day with you ✨</p>
-        </div>
-      </div>
-    </div>
+    <main class="scroll-container" ref="mainContainer">
+  <section id="home">
+    <HomePage ref="homeSection" />
+  </section>
+  
+  <section id="about">
+    <AboutPage ref="aboutSection" />
+  </section>
+  
+  <section id="projects">
+    <ProjectPage ref="projectSection" />
+  </section>
+  <section id="contact">
+    <ContactPage ref="contactSection" />
+  </section>
+</main>
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue'
-import lizImage from '@/assets/liz.jpg'
+<script>
+import HomePage from '@/components/HomePage.vue'
+import AboutPage from '@/components/AboutPage.vue'
+import ProjectPage from '@/components/ProjectPage.vue'
+import ContactPage from '@/components/ContactPage.vue'
 
-const answered = ref(false)
-const noButtonMoveCount = ref(0)
-const noButtonStyle = ref({})
-const showAngryFace = ref(false)
+export default {
+  components: { HomePage, AboutPage, ProjectPage, ContactPage },
+  data() {
+    return {
+      currentSection: 'home',
+      currentBackground: 'home-bg',
+      observer: null,
+      isScrolled: false
+    }
+  },
+  watch: {
+    currentSection(newVal) {
+      this.currentBackground = `${newVal}-bg`
+    }
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.setupIntersectionObserver()
+      window.addEventListener('scroll', this.handleScroll)
+    })
+  },
+  methods: {
+    scrollTo(section) {
+  const target = document.getElementById(section);
+  if (target) {
+    target.scrollIntoView({ behavior: 'smooth' });
+  }
+},
+    handleScroll() {
+      this.isScrolled = window.scrollY > 50
+    },
+    setupIntersectionObserver() {
+  const options = {
+    root: this.$refs.mainContainer,
+    threshold: 0.6
+  };
 
-function moveButton() {
-  noButtonMoveCount.value++
-  
-  if (noButtonMoveCount.value >= 4) {
-    showAngryFace.value = true
-    return
-  }
-  
-  // Make the No button run away
-  const maxX = window.innerWidth - 150
-  const maxY = window.innerHeight - 100
-  
-  const randomX = Math.random() * maxX
-  const randomY = Math.random() * maxY
-  
-  noButtonStyle.value = {
-    position: 'fixed',
-    left: randomX + 'px',
-    top: randomY + 'px',
-    transition: 'all 0.3s ease',
-    zIndex: 1000
-  }
+  this.observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        this.currentSection = entry.target.id;
+      }
+    });
+  }, options);
+
+  // Observe each section by ID
+  ['home', 'about', 'projects', 'contact'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      this.observer.observe(el);
+    }
+  });
 }
 
-function sayYes() {
-  answered.value = true
-  
-  // Create confetti with flowers
-  for (let i = 0; i < 150; i++) {
-    setTimeout(() => {
-      const confetti = document.createElement('div')
-      confetti.className = 'confetti'
-      confetti.style.left = Math.random() * window.innerWidth + 'px'
-      confetti.style.top = '-10px'
-      
-      const flowers = ['🌸', '🌺', '🌷', '🌹', '💐', '🌼', '🏵️', '🌻']
-      const hearts = ['❤️', '💕', '💖', '✨', '💝']
-      const colors = ['#ff1493', '#ff69b4', '#ff85c1', '#ffc0cb', '#ff6b9d']
-      
-      // 70% flowers, 30% hearts/sparkles
-      if (Math.random() > 0.3) {
-        confetti.innerHTML = flowers[Math.floor(Math.random() * flowers.length)]
-        confetti.style.fontSize = (15 + Math.random() * 15) + 'px'
-        confetti.style.background = 'transparent'
-      } else if (Math.random() > 0.5) {
-        confetti.innerHTML = hearts[Math.floor(Math.random() * hearts.length)]
-        confetti.style.fontSize = '20px'
-        confetti.style.background = 'transparent'
-      } else {
-        confetti.style.background = colors[Math.floor(Math.random() * colors.length)]
-      }
-      
-      confetti.style.animationDelay = Math.random() * 0.5 + 's'
-      confetti.style.animationDuration = (2 + Math.random() * 2) + 's'
-      document.body.appendChild(confetti)
-      
-      setTimeout(() => confetti.remove(), 5000)
-    }, i * 20)
   }
 }
 </script>
 
 <style>
-/* Global reset for this page */
+
 * {
   box-sizing: border-box;
 }
-
-/* Global styles for confetti (not scoped) */
-.confetti {
-  position: fixed;
-  width: 10px;
-  height: 10px;
-  background: #ff1493;
-  animation: confetti-fall 3s linear;
-  pointer-events: none;
-  z-index: 9999;
-}
-
-@keyframes confetti-fall {
-  to {
-    transform: translateY(100vh) rotate(720deg);
-    opacity: 0;
-  }
-}
-</style>
-
-<style scoped>
-.valentine-wrapper {
+/* Background container - fixed position covers entire viewport */
+.background-container {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100vw;
-  height: 100vh;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background: linear-gradient(135deg, #ffeef8 0%, #ffe0f0 100%);
-  z-index: 9999;
-}
-
-.valentine-container {
   width: 100%;
   height: 100%;
+  z-index: -1;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: background-image 0.5s ease-in-out;
+}
+::-webkit-scrollbar {
+  width: 12px; /* Scrollbar width */
+}
+
+::-webkit-scrollbar-track {
+  background: #333; /* Dark background for the track */
+  border-radius: 10px; /* Rounded corners */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #bdbdbd; /* Darker thumb color */
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ff5e93; /* Lighter color on hover */
+}
+
+/* Optional: For vertical scrollbar */
+::-webkit-scrollbar:vertical {
+  width: 12px;
+}
+
+/* Optional: For horizontal scrollbar */
+::-webkit-scrollbar:horizontal {
+  height: 12px;
+}
+/* Define individual background classes */
+.home-bg {
+  background-image: url('/homepage.jpg');
+}
+
+.about-bg {
+  background-image: url('/about.jpg');
+}
+
+.projects-bg{
+  background-image: url('/projectspage.jpg');
+}
+
+.contact-bg{
+  background-image: url('/contact.jpg');
+}
+/* Ensure content containers are transparent */
+#app, .scroll-container {
+  background: transparent !important;
+}
+
+/* Header styling - now with glass morphism effect */
+header {
+  background: transparent;
+  /* ... rest of your header styles ... */
+}
+/* Base styles */
+html, body, #app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative; /* Needed for absolute positioning of background */
+}
+
+/* Header styles */
+header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+  background: transparent;
+  padding: 5px 0;
+  transition: background-color 0.3s ease;
+}
+
+header.scrolled {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+nav {
+  padding-top: 10px;
   display: flex;
   justify-content: center;
-  align-items: center;
-  position: relative;
-}
-
-/* Floating hearts background */
-.heart-bg {
-  position: absolute;
-  font-size: 20px;
-  opacity: 0.3;
-  animation: float 10s infinite;
-  pointer-events: none;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(10deg); }
-}
-
-.card-container {
-  background: white;
-  padding: 60px 40px;
-  border-radius: 30px;
-  box-shadow: 0 20px 60px rgba(255, 105, 180, 0.3);
-  text-align: center;
-  max-width: 600px;
-  width: 90%;
-  position: relative;
-  z-index: 1;
-  animation: fadeIn 1s ease-in;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-.heart-icon {
-  font-size: 80px;
-  animation: heartbeat 1.5s infinite;
-  display: inline-block;
-  margin-bottom: 20px;
-}
-
-.heart-icon.dancing {
-  animation: dance 0.5s infinite;
-}
-
-@keyframes heartbeat {
-  0%, 100% { transform: scale(1); }
-  10%, 30% { transform: scale(1.1); }
-  20%, 40% { transform: scale(1); }
-}
-
-@keyframes dance {
-  0%, 100% { transform: rotate(-5deg) scale(1.1); }
-  50% { transform: rotate(5deg) scale(1.2); }
-}
-
-h1 {
-  color: #ff1493;
-  font-size: 2.5em;
-  margin-bottom: 20px;
-  font-weight: normal;
-  font-family: 'Georgia', serif;
-}
-
-p {
-  color: #666;
-  font-size: 1.2em;
-  line-height: 1.6;
-  margin-bottom: 40px;
-  font-family: 'Georgia', serif;
-}
-
-.buttons {
-  display: flex;
   gap: 20px;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-bottom: 30px;
+  font-family: 'Bangers', cursive;
+  font-size: 1.1rem;
+  height: 3em;
 }
 
-button {
-  padding: 15px 40px;
-  font-size: 1.1em;
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+nav a {
+  position: relative;
+  color: black;
+  text-decoration: none;
+  padding: 5px 20px;
+  border: 3px solid #fff;
+  border-radius: 8px;
+  background: rgba(211, 211, 211, 0.704);
+  color: #000;
   font-weight: bold;
-  font-family: 'Georgia', serif;
+  box-shadow: 3px 3px 0 #000;
+  transition: all 0.2s ease-in-out;
 }
 
-.yes-btn {
-  background: linear-gradient(135deg, #ff1493, #ff69b4);
-  color: white;
-  box-shadow: 0 4px 15px rgba(255, 20, 147, 0.4);
-  animation: pulse 2s infinite;
+nav a:hover {
+  background: #ff5e93;
+  color: #fff;
+  box-shadow: 0px 0px 10px #ff5e93, 4px 4px 0 #000;
+  transform: scale(1.1) rotate(-1deg);
 }
 
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+nav a.active {
+  background: white;
+  color: #000;
+  box-shadow: 4px 4px 0 #000;
 }
 
-.yes-btn:hover {
-  transform: scale(1.15);
-  box-shadow: 0 6px 25px rgba(255, 20, 147, 0.7);
-}
-
-.no-btn {
-  background: #f0f0f0;
-  color: #999;
-}
-
-.no-btn:hover {
-  background: #e0e0e0;
-}
-
-/* Angry face screen */
-.angry-screen {
-  animation: fadeIn 0.5s ease-in;
-}
-
-.angry-screen img {
-  width: 300px;
-  max-width: 100%;
-  border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-  margin-bottom: 20px;
-}
-
-.angry-screen h1 {
-  font-size: 4em;
-  margin: 20px 0;
-}
-
-.angry-screen p {
-  font-size: 1.5em;
-  font-weight: bold;
-  color: #ff1493;
-  margin-bottom: 20px;
-}
-
-/* Success screen */
-.success {
-  animation: fadeIn 1s ease-in;
-}
-
-.success-image {
-  width: 250px;
-  max-width: 100%;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(255, 20, 147, 0.3);
-  margin-bottom: 20px;
-  animation: gentle-float 3s ease-in-out infinite;
-}
-
-@keyframes gentle-float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-}
-
-.success h1 {
-  font-size: 3em;
-  animation: rainbow 3s infinite;
-}
-
-.special-message {
-  font-size: 1.3em;
-  color: #ff1493;
-  font-style: italic;
-  margin-top: 30px;
-  line-height: 1.8;
-}
-
-@keyframes rainbow {
-  0% { color: #ff1493; }
-  25% { color: #ff69b4; }
-  50% { color: #ff85c1; }
-  75% { color: #ff69b4; }
-  100% { color: #ff1493; }
+/* Main content styles */
+.scroll-container {
+  flex: 1;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  height: calc(100vh);
+  position: relative;
+  background: transparent;
 }
 
 /* Mobile responsiveness */
-@media (max-width: 600px) {
-  .card-container {
-    padding: 40px 30px;
+@media (max-width: 768px) {
+  nav {
+    gap: 20px;
+    font-size: 1.2rem;
   }
   
-  h1 {
-    font-size: 2em;
-  }
-  
-  p {
-    font-size: 1em;
-  }
-  
-  .heart-icon {
-    font-size: 60px;
-  }
-  
-  .angry-screen img {
-    width: 200px;
-  }
-  
-  .success h1 {
-    font-size: 2em;
+  nav a {
+    padding: 8px 15px;
   }
 }
 </style>
